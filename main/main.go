@@ -1,0 +1,87 @@
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"log"
+	"os"
+	"os/signal"
+	"syscall"
+
+	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+	"github.com/bwmarrin/discordgo"
+	"github.com/joho/godotenv"
+	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
+)
+
+type Credential struct {
+	DiscordToken string `json:"DISCORD_TOKEN"`
+}
+
+func accessSecretVersion(projectID string, secretID string) (*Credential, error) {
+	ctx := context.Background()
+	client, err := secretmanager.NewClient(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	secretURI := "projects/" + projectID + "/secrets/" + secretID + "/versions/latest"
+	req := &secretmanagerpb.AccessSecretVersionRequest{
+		Name: secretURI,
+	}
+
+	result, err := client.AccessSecretVersion(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	var credential Credential
+	if err := json.Unmarshal(result.Payload.Data, &credential); err != nil {
+		return nil, err
+	}
+	return &credential, nil
+}
+
+func main() {
+	err := godotenv.Load("etc/.env")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	projectID := os.Getenv("PROJECT_ID")
+	secretID := os.Getenv("SECRET_ID")
+	log.Println(projectID, secretID)
+	credential, err := accessSecretVersion(projectID, secretID)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	client, err := discordgo.New("Bot " + credential.DiscordToken)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	client.AddHandler(messageCreate)
+
+	err = client.Open()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	log.Println("Bot is running")
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
+	client.Close()
+}
+
+func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
+	if message.Author.ID == session.State.User.ID {
+		return
+	}
+	if message.Content == "ping" {
+		session.ChannelMessageSend(message.ChannelID, "pong from golang")
+	}
+}
