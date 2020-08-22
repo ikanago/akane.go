@@ -40,7 +40,7 @@ jobs:
         gcloud auth configure-docker
         
     - name: Build an image
-      run: docker build -t $IMAGE_URL .
+      run: docker build --file Dockerfile.prod -t $IMAGE_URL .
     
     - name: Push the image
       run: docker push $IMAGE_URL
