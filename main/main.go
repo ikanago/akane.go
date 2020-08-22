@@ -45,12 +45,12 @@ func accessSecretVersion(projectID string, secretID string) (*Credential, error)
 func main() {
 	err := godotenv.Load("etc/.env")
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("No such file or directory", err)
+		return
 	}
 
 	projectID := os.Getenv("PROJECT_ID")
 	secretID := os.Getenv("SECRET_ID")
-	log.Println(projectID, secretID)
 	credential, err := accessSecretVersion(projectID, secretID)
 	if err != nil {
 		log.Fatal(err)
