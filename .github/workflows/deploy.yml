@@ -13,7 +13,7 @@ on:
 
 env:
   GCP_PROJECT_ID: ${{secrets.GCP_PROJECT_ID}}
-  GCP_REGION: ${{secrets.GCP_REGION}}
+  GCP_ZONE: ${{secrets.GCP_ZONE}}
   GCP_SECRET_ID: ${{secrets.GCP_SECRET_ID}}
   IMAGE_URL: gcr.io/${{secrets.GCP_PROJECT_ID}}/akane:${{github.sha}}
 
@@ -51,4 +51,5 @@ jobs:
           gcloud compute instances update-container akane \
             --container-image $IMAGE_URL \
             --container-env PROJECT_ID=$GCP_PROJECT_ID,SECRET_ID=$GCP_SECRET_ID
+            --zone $GCP_ZONE
 
