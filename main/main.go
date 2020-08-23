@@ -55,7 +55,7 @@ func main() {
 		log.Fatal(err)
 		return
 	}
-	client.AddHandler(messageCreate)
+	client.AddHandler(MessageCreate)
 
 	err = client.Open()
 	if err != nil {
@@ -68,13 +68,4 @@ func main() {
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
 	client.Close()
-}
-
-func messageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
-	if message.Author.ID == session.State.User.ID {
-		return
-	}
-	if message.Content == "ping" {
-		session.ChannelMessageSend(message.ChannelID, "pong from golang")
-	}
 }
