@@ -50,6 +50,6 @@ jobs:
       run: |
           gcloud compute instances update-container akane \
             --container-image $IMAGE_URL \
-            --container-env PROJECT_ID=$GCP_PROJECT_ID,SECRET_ID=$GCP_SECRET_ID
+            --container-env PROJECT_ID=$GCP_PROJECT_ID,SECRET_ID=$GCP_SECRET_ID \
             --zone $GCP_ZONE
 
