@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -62,6 +63,9 @@ func main() {
 		log.Fatal(err)
 		return
 	}
+
+	port := os.Getenv("PORT")
+	http.ListenAndServe(port, nil)
 
 	log.Println("Bot is running")
 	sc := make(chan os.Signal, 1)
