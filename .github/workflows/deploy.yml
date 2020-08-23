@@ -9,12 +9,12 @@ on:
     branches: [ master, setup ]
   pull_request:
     branches: [ master ]
-    types: [closed]
+    types: [ closed ]
 
 env:
   GCP_PROJECT_ID: ${{secrets.GCP_PROJECT_ID}}
   GCP_REGION: ${{secrets.GCP_REGION}}
-  GCP_PORT: ${{secrets.GCP_PORT}}
+  GCP_SECRET_ID: ${{secrets.GCP_SECRET_ID}}
   IMAGE_URL: gcr.io/${{secrets.GCP_PROJECT_ID}}/akane:${{github.sha}}
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
@@ -28,29 +28,28 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    
+
     - name: Setup gcloud cli
       uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
         version: '290.0.1'
         service_account_key: ${{secrets.SA_KEY}}
-        
+
     - name: Configure gcloud
       run: |
         gcloud config set project $GCP_PROJECT_ID
         gcloud auth configure-docker
-        
+
     - name: Build an image
       run: docker build --file Dockerfile.prod -t $IMAGE_URL .
-    
+
     - name: Push the image
       run: docker push $IMAGE_URL
-    
+
     - name: Deploy the image
       run: |
-          gcloud run deploy akane \
-            --image $IMAGE_URL \
-            --platform managed \
-            --region $GCP_REGION \
-            --allow-unauthenticated \
-            --port $GCP_PORT
+          gcloud compute instances update-container akane \
+            --container-image $IMAGE_URL \
+            --zone $GCP_REGION \
+            --container-env PROJECT_ID=$GCP_PROJECT_ID,SECRET_ID=$GCP_SECRET_ID
+
