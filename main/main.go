@@ -10,7 +10,6 @@ import (
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"github.com/bwmarrin/discordgo"
-	"github.com/joho/godotenv"
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 )
 
@@ -43,12 +42,6 @@ func accessSecretVersion(projectID string, secretID string) (*Credential, error)
 }
 
 func main() {
-	err := godotenv.Load("etc/.env")
-	if err != nil {
-		log.Fatal("No such file or directory", err)
-		return
-	}
-
 	projectID := os.Getenv("PROJECT_ID")
 	secretID := os.Getenv("SECRET_ID")
 	credential, err := accessSecretVersion(projectID, secretID)
