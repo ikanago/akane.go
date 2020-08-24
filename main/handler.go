@@ -13,7 +13,7 @@ type Command interface {
 
 type Help struct{}
 
-type Ping struct {}
+type Ping struct{}
 
 type EmojiFromText struct {
 	Text          string
