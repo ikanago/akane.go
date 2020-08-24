@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"log"
+
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -10,7 +13,12 @@ type Command interface {
 
 type Help struct{}
 
-type EmojiFromText struct{}
+type EmojiFromText struct {
+	Text          string
+	Alias         string
+	Color         string
+	IsTransparent bool
+}
 
 type ParseError struct {
 	message string
@@ -23,12 +31,14 @@ func (Help) handle(session *discordgo.Session, message *discordgo.Message) (err 
 		Title:  "アカネチャンのコマンド",
 		Fields: HelpMessageEmbeds,
 	}
-	_, err = session.ChannelMessageSendEmbed(message.ChannelID, &messageEmbed)
+	result, err := session.ChannelMessageSendEmbed(message.ChannelID, &messageEmbed)
+	log.Println(result)
 	return
 }
 
-func (EmojiFromText) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
-	reply := "絵文字を追加しました!"
-	_, err = session.ChannelMessageSend(message.ChannelID, reply)
+func (emojiFromText EmojiFromText) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
+	reply := fmt.Sprint(emojiFromText)
+	result, err := session.ChannelMessageSend(message.ChannelID, reply)
+	log.Println(result)
 	return
 }

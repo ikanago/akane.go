@@ -23,20 +23,141 @@ func TestParseCommand(t *testing.T) {
 		assert.Nil(err)
 	})
 
+	t.Run("Unknown command", func(t *testing.T) {
+		input := "<@!746704561451827202> hoge"
+		actual, err := ParseCommand(input)
+		assert := assert.New(t)
+		assert.Nil(actual)
+		assert.NotNil(err)
+	})
+}
+
+func TestParseEmojiFromText(t *testing.T) {
 	t.Run("emoji command", func(t *testing.T) {
-		input := "<@!746704561451827202> emoji"
-		expected := EmojiFromText{}
+		input := "<@!746704561451827202> emoji hoge123_456 あいうabc ##12Fa4C true"
+		expected := EmojiFromText{
+			Alias:         "hoge123_456",
+			Text:          "あいうabc",
+			Color:         "12fa4c",
+			IsTransparent: true,
+		}
 		actual, err := ParseCommand(input)
 		assert := assert.New(t)
 		assert.Equal(expected, actual)
 		assert.Nil(err)
 	})
+}
 
-	t.Run("emoji command", func(t *testing.T) {
-		input := "<@!746704561451827202> hoge"
-		actual, err := ParseCommand(input)
+func TestValidateAlias(t *testing.T) {
+	t.Run("Valid alias", func(t *testing.T) {
+		alias := "abc_123_1a2b3c"
+		expected := "abc_123_1a2b3c"
+		actual, err := validateAlias(alias)
 		assert := assert.New(t)
-		assert.Nil(actual)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+
+	t.Run("Invalid alias", func(t *testing.T) {
+		alias := "abc!"
+		expected := ""
+		actual, err := validateAlias(alias)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.NotNil(err)
+	})
+}
+
+func TestValidateColor(t *testing.T) {
+	t.Run("Valid color code(6 hex)", func(t *testing.T) {
+		color := "#12FaBc"
+		expected := "12fabc"
+		actual, err := validateColor(color)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+
+	t.Run("Valid color code without #", func(t *testing.T) {
+		color := "12FaBc"
+		expected := "12fabc"
+		actual, err := validateColor(color)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+
+	t.Run("Valid color code(3 hex)", func(t *testing.T) {
+		color := "#1aB"
+		expected := "11aabb"
+		actual, err := validateColor(color)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+
+	t.Run("Valid color name", func(t *testing.T) {
+		color := "siLveR"
+		expected := "c0c0c0"
+		actual, err := validateColor(color)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+
+	t.Run("Invalid color code", func(t *testing.T) {
+		color := "#12gabc"
+		expected := ""
+		actual, err := validateAlias(color)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.NotNil(err)
+	})
+
+	t.Run("Invalid color code length", func(t *testing.T) {
+		color := "#1234567"
+		expected := ""
+		actual, err := validateAlias(color)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.NotNil(err)
+	})
+
+	t.Run("Invalid color name", func(t *testing.T) {
+		color := "siLveRr"
+		expected := ""
+		actual, err := validateColor(color)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.NotNil(err)
+	})
+}
+
+func TestValidateIsTransparent(t *testing.T) {
+	t.Run("Valid transparency flag", func(t *testing.T) {
+		flag := "tRuE"
+		expected := true
+		actual, err := validateIsTransparent(flag)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+
+	t.Run("Valid transparency flag", func(t *testing.T) {
+		flag := "FalSE"
+		expected := false
+		actual, err := validateIsTransparent(flag)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+
+	t.Run("Invalid transparency flag", func(t *testing.T) {
+		flag := "truee"
+		expected := false
+		actual, err := validateIsTransparent(flag)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
 		assert.NotNil(err)
 	})
 }
