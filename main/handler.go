@@ -1,41 +1,34 @@
 package main
 
 import (
-	"log"
-	"strings"
-
 	"github.com/bwmarrin/discordgo"
 )
 
-func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
-	if message.Author.ID == session.State.User.ID || len(message.Mentions) == 0 || message.Mentions[0].Username != session.State.User.Username {
-		return
-	}
+type Command interface {
+	handle(*discordgo.Session, *discordgo.Message) error
+}
 
-	arguments := strings.Fields(message.Content)
-	if len(arguments) < 2 {
-		return
-	}
+type Help struct{}
 
-	log.Print(arguments)
-	command := arguments[1]
-	if command == "help" {
-		helpMessage := getHelpMessage()
-		if _, err := session.ChannelMessageSendEmbed(message.ChannelID, helpMessage); err != nil {
-			log.Fatal(err)
-			return
-		}
-	} else if command == "emoji" {
-		reply, err := CreateEmojiFromText()
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+type EmojiFromText struct{}
 
-		log.Print(reply)
-		if _, err := session.ChannelMessageSend(message.ChannelID, reply); err != nil {
-			log.Fatal(err)
-			return
-		}
+type ParseError struct {
+	message string
+}
+
+func (Help) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
+	messageEmbed := discordgo.MessageEmbed{
+		Color:  0xF9A9BF,
+		Type:   discordgo.EmbedTypeRich,
+		Title:  "アカネチャンのコマンド",
+		Fields: HelpMessageEmbeds,
 	}
+	_, err = session.ChannelMessageSendEmbed(message.ChannelID, &messageEmbed)
+	return
+}
+
+func (EmojiFromText) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
+	reply := "絵文字を追加しました!"
+	_, err = session.ChannelMessageSend(message.ChannelID, reply)
+	return
 }
