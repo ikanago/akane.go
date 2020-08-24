@@ -1,7 +1,7 @@
 package main
 
 import (
-    "github.com/bwmarrin/discordgo"
+	"github.com/bwmarrin/discordgo"
 )
 
 var HelpMessageEmbeds = []*discordgo.MessageEmbedField{
@@ -24,17 +24,4 @@ var HelpMessageEmbeds = []*discordgo.MessageEmbedField{
 			"`@Akane help`\n" +
 			"と打ってみましょう! きっとすぐに使えるようになりますよ!",
 	},
-}
-
-func getHelpMessage() *discordgo.MessageEmbed {
-	return &discordgo.MessageEmbed{
-        Color: 0xF9A9BF,
-		Type:   discordgo.EmbedTypeRich,
-		Title:  "アカネチャンのコマンド",
-		Fields: HelpMessageEmbeds,
-	}
-}
-
-func CreateEmojiFromText() (message string, err error) {
-	return "emoji", nil
 }
