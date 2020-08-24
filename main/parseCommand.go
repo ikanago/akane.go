@@ -32,12 +32,11 @@ func ParseCommand(input string) (Command, error) {
 		return nil, errors.New("コマンドを指定してください!")
 	}
 
-	log.Print(arguments)
 	command := arguments[1]
 	if command == "help" {
 		return Help{}, nil
 	} else if command == "emoji" {
 		return EmojiFromText{}, nil
 	}
-	return ParseError{content: "そのようなコマンドはありません><"}, nil
+	return nil, errors.New("そのようなコマンドはありません><")
 }

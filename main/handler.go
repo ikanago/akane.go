@@ -1,8 +1,6 @@
 package main
 
 import (
-	"errors"
-
 	"github.com/bwmarrin/discordgo"
 )
 
@@ -15,7 +13,7 @@ type Help struct{}
 type EmojiFromText struct{}
 
 type ParseError struct {
-	content string
+	message string
 }
 
 func (Help) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
@@ -30,12 +28,7 @@ func (Help) handle(session *discordgo.Session, message *discordgo.Message) (err 
 }
 
 func (EmojiFromText) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
-	err = errors.New("Unimplemented")
-	return
-}
-
-func (parseError ParseError) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
-	reply := parseError.content
+	reply := "絵文字を追加しました!"
 	_, err = session.ChannelMessageSend(message.ChannelID, reply)
 	return
 }
