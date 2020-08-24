@@ -38,6 +38,8 @@ func ParseCommand(input string) (Command, error) {
 	command := arguments[1]
 	if command == "help" {
 		return Help{}, nil
+	} else if command == "ping" {
+		return Ping{}, nil
 	} else if command == "emoji" {
 		if len(arguments) < 4 {
 			return nil, errors.New("エイリアスまたは絵文字にするテキストを指定してください")

@@ -23,6 +23,15 @@ func TestParseCommand(t *testing.T) {
 		assert.Nil(err)
 	})
 
+	t.Run("ping command", func(t *testing.T) {
+		input := "<@!746704561451827202> ping"
+		expected := Ping{}
+		actual, err := ParseCommand(input)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+
 	t.Run("Unknown command", func(t *testing.T) {
 		input := "<@!746704561451827202> hoge"
 		actual, err := ParseCommand(input)
