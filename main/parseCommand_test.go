@@ -15,7 +15,7 @@ func TestParseCommand(t *testing.T) {
 	})
 
 	t.Run("help command", func(t *testing.T) {
-		input := "<@!746704561451827202> hElp"
+		input := "<@!746704561451827202> help"
 		expected := Help{}
 		actual, err := ParseCommand(input)
 		assert := assert.New(t)
@@ -57,6 +57,18 @@ func TestParseEmojiFromText(t *testing.T) {
 	})
 }
 
+func TestParseEmojiFromImage(t *testing.T) {
+	t.Run("emoji command", func(t *testing.T) {
+		input := "<@!746704561451827202> emoji image hoge123_456 "
+		expected := EmojiFromImage{
+			Alias: "hoge123_456",
+		}
+		actual, err := ParseCommand(input)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+}
 func TestValidateAlias(t *testing.T) {
 	t.Run("Valid alias", func(t *testing.T) {
 		alias := "abc_123_1a2b3c"

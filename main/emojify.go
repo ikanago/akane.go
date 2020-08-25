@@ -14,18 +14,27 @@ import (
 func (emojiFromText *EmojiFromText) EmojifyText() (encodedImage string, err error) {
 	encodedText := url.QueryEscape(emojiFromText.Text)
 	apiURL := fmt.Sprintf("https://emoji-gen.ninja/emoji_download?align=center&back_color=FFFFFF%s&color=%sFF&font=notosans-mono-bold&public_fg=false&size_fixed=false&stretch=true&text=%s", emojiFromText.Transparancy, emojiFromText.Color, encodedText)
+	encodedImage, err = getImageFromURL(apiURL)
+	return
+}
 
-	response, err := http.Get(apiURL)
+func EmojifyImage(url string) (encodedImage string, err error) {
+	encodedImage, err = getImageFromURL(url)
+	return
+}
+
+func getImageFromURL(url string) (encodedImage string, err error) {
+	response, err := http.Get(url)
 	if err != nil {
 		log.Println(err)
-		return "", errors.New("絵文字の作成に失敗しました")
+		return "", errors.New("画像の作成に失敗しました")
 	}
 	defer response.Body.Close()
 
 	body, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Println(err)
-		return "", errors.New("絵文字の作成に失敗しました")
+		return "", errors.New("画像の読み込みに失敗しました")
 	}
 	encodedImage = base64.StdEncoding.EncodeToString(body)
 	encodedImage = fmt.Sprintf("data:png;base64,%s", encodedImage)

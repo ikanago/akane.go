@@ -15,7 +15,7 @@ func ParseCommand(input string) (Command, error) {
 		return nil, errors.New("コマンドを指定してください")
 	}
 
-	command := strings.ToLower(arguments[1])
+	command := arguments[1]
 	if command == "help" {
 		return Help{}, nil
 	} else if command == "ping" {
@@ -23,6 +23,14 @@ func ParseCommand(input string) (Command, error) {
 	} else if command == "emoji" {
 		if len(arguments) < 4 {
 			return nil, errors.New("エイリアスまたは絵文字にするテキストを指定してください")
+		}
+
+		if arguments[2] == "image" {
+			alias, err := validateAlias(arguments[3])
+			if err != nil {
+				return nil, err
+			}
+			return EmojiFromImage{Alias: alias}, nil
 		}
 
 		alias, err := validateAlias(arguments[2])

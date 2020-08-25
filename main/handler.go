@@ -27,6 +27,10 @@ type EmojiFromText struct {
 	Transparancy string
 }
 
+type EmojiFromImage struct {
+	Alias string
+}
+
 func (Help) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
 	messageEmbed := discordgo.MessageEmbed{
 		Color:  0xF9A9BF,
@@ -60,6 +64,32 @@ func (emojiFromText EmojiFromText) handle(session *discordgo.Session, message *d
 	}
 
 	reply := fmt.Sprintf("カスタム絵文字 :%s: を追加しました", emojiFromText.Alias)
+	result, err := session.ChannelMessageSend(message.ChannelID, reply)
+	log.Println(result)
+	return
+}
+
+func (emojiFromImage EmojiFromImage) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
+	if len(message.Attachments) != 1 {
+		reply := "指定できる画像は1つです"
+		log.Println(reply)
+		return errors.New(reply)
+	}
+
+	encodedImage, err := EmojifyImage(message.Attachments[0].URL)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
+	emoji, err := session.GuildEmojiCreate(message.GuildID, emojiFromImage.Alias, encodedImage, nil)
+	log.Printf("Emoji: %v", emoji)
+	if err != nil {
+		log.Println(err)
+		return errors.New("カスタム絵文字の追加に失敗しました")
+	}
+
+	reply := fmt.Sprintf("カスタム絵文字 :%s: を追加しました", emojiFromImage.Alias)
 	result, err := session.ChannelMessageSend(message.ChannelID, reply)
 	log.Println(result)
 	return
