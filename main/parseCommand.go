@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/asaskevich/govalidator"
 )
 
 // ParseCommand parses messages from Discord and returns results as sturct.
@@ -31,6 +33,24 @@ func ParseCommand(input string) (Command, error) {
 				return nil, err
 			}
 			return EmojiFromImage{Alias: alias}, nil
+		}
+
+		if arguments[2] == "url" {
+			if len(arguments) < 5 {
+				return nil, errors.New("画像のURLを指定してください")
+			}
+
+			alias, err := validateAlias(arguments[3])
+			if err != nil {
+				return nil, err
+			}
+
+			url := arguments[4]
+			isURL := govalidator.IsURL(url)
+			if !isURL {
+				return nil, errors.New("URLの書式がおかしいです")
+			}
+			return EmojiFromURL{Alias: alias, URL: url}, nil
 		}
 
 		alias, err := validateAlias(arguments[2])

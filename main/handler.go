@@ -31,6 +31,11 @@ type EmojiFromImage struct {
 	Alias string
 }
 
+type EmojiFromURL struct {
+	Alias string
+	URL   string
+}
+
 func (Help) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
 	messageEmbed := discordgo.MessageEmbed{
 		Color:  0xF9A9BF,
@@ -73,13 +78,8 @@ func (emojiFromImage EmojiFromImage) handle(session *discordgo.Session, message 
 	if len(message.Attachments) != 1 {
 		return errors.New("指定できる画像は1つです")
 	}
-	// Size of image to convert into emoji must be smaller than 256kB.
-	maximumSize := 262144
-	if message.Attachments[0].Size > maximumSize {
-		return errors.New("画像のサイズは256kB以下にしてください")
-	}
 
-	encodedImage, err := EmojifyImage(message.Attachments[0].URL)
+	encodedImage, err := getImageFromURL(message.Attachments[0].URL)
 	if err != nil {
 		return
 	}
@@ -92,6 +92,25 @@ func (emojiFromImage EmojiFromImage) handle(session *discordgo.Session, message 
 	}
 
 	reply := fmt.Sprintf("カスタム絵文字 :%s: を追加しました", emojiFromImage.Alias)
+	result, err := session.ChannelMessageSend(message.ChannelID, reply)
+	log.Println(result)
+	return
+}
+
+func (emojiFromURL EmojiFromURL) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
+	encodedImage, err := getImageFromURL(emojiFromURL.URL)
+	if err != nil {
+		return
+	}
+
+	emoji, err := session.GuildEmojiCreate(message.GuildID, emojiFromURL.Alias, encodedImage, nil)
+	log.Printf("Emoji: %v", emoji)
+	if err != nil {
+		log.Println(err)
+		return errors.New("カスタム絵文字の追加に失敗しました")
+	}
+
+	reply := fmt.Sprintf("カスタム絵文字 :%s: を追加しました", emojiFromURL.Alias)
 	result, err := session.ChannelMessageSend(message.ChannelID, reply)
 	log.Println(result)
 	return
