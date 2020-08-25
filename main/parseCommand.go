@@ -51,6 +51,14 @@ func ParseCommand(input string) (Command, error) {
 			return EmojiFromURL{Alias: alias, URL: url}, nil
 		}
 
+		if arguments[2] == "delete" {
+			alias, err := validateAlias(arguments[3])
+			if err != nil {
+				return nil, err
+			}
+			return EmojiDelete{Alias: alias}, nil
+		}
+
 		alias, err := validateAlias(arguments[2])
 		if err != nil {
 			return nil, err

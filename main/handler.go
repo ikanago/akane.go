@@ -36,6 +36,10 @@ type EmojiFromURL struct {
 	URL   string
 }
 
+type EmojiDelete struct {
+	Alias string
+}
+
 func (Help) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
 	messageEmbed := discordgo.MessageEmbed{
 		Color:  0xF9A9BF,
@@ -43,15 +47,13 @@ func (Help) handle(session *discordgo.Session, message *discordgo.Message) (err 
 		Title:  "アカネチャンのコマンド",
 		Fields: helpMessageEmbeds,
 	}
-	result, err := session.ChannelMessageSendEmbed(message.ChannelID, &messageEmbed)
-	log.Println(result)
+	_, err = session.ChannelMessageSendEmbed(message.ChannelID, &messageEmbed)
 	return
 }
 
 func (Ping) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
 	reply := "Pong!"
-	result, err := session.ChannelMessageSend(message.ChannelID, reply)
-	log.Println(result)
+	_, err = session.ChannelMessageSend(message.ChannelID, reply)
 	return
 }
 
@@ -69,8 +71,7 @@ func (emojiFromText EmojiFromText) handle(session *discordgo.Session, message *d
 	}
 
 	reply := fmt.Sprintf("カスタム絵文字 :%s: を追加しました", emojiFromText.Alias)
-	result, err := session.ChannelMessageSend(message.ChannelID, reply)
-	log.Println(result)
+	_, err = session.ChannelMessageSend(message.ChannelID, reply)
 	return
 }
 
@@ -92,8 +93,7 @@ func (emojiFromImage EmojiFromImage) handle(session *discordgo.Session, message 
 	}
 
 	reply := fmt.Sprintf("カスタム絵文字 :%s: を追加しました", emojiFromImage.Alias)
-	result, err := session.ChannelMessageSend(message.ChannelID, reply)
-	log.Println(result)
+	_, err = session.ChannelMessageSend(message.ChannelID, reply)
 	return
 }
 
@@ -111,7 +111,39 @@ func (emojiFromURL EmojiFromURL) handle(session *discordgo.Session, message *dis
 	}
 
 	reply := fmt.Sprintf("カスタム絵文字 :%s: を追加しました", emojiFromURL.Alias)
-	result, err := session.ChannelMessageSend(message.ChannelID, reply)
-	log.Println(result)
+	_, err = session.ChannelMessageSend(message.ChannelID, reply)
 	return
+}
+
+func (emojiDelete EmojiDelete) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
+	emojiID, err := fetchEmojiID(session, message.GuildID, emojiDelete.Alias)
+	if err != nil {
+		return
+	}
+
+	err = session.GuildEmojiDelete(message.GuildID, emojiID)
+	if err != nil {
+		return
+	}
+
+	reply := fmt.Sprintf("カスタム絵文字 :%s: を削除しました", emojiDelete.Alias)
+	_, err = session.ChannelMessageSend(message.ChannelID, reply)
+	return
+}
+
+// Search emoji whose alias is `alias` in a certain server.
+func fetchEmojiID(session *discordgo.Session, guildID string, alias string) (emojiID string, err error) {
+	emojis, err := session.GuildEmojis(guildID)
+	if err != nil {
+		log.Println(err)
+		return "", errors.New("絵文字を取得できませんでした")
+	}
+
+	for _, emoji := range emojis {
+		if emoji.Name == alias {
+			emojiID = emoji.ID
+			return
+		}
+	}
+	return "", errors.New("そのようなエイリアスの絵文字はありません")
 }

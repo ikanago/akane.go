@@ -133,3 +133,16 @@ func TestParseEmojiFromURL(t *testing.T) {
 		assert.NotNil(err)
 	})
 }
+
+func TestParseEmojiDelete(t *testing.T) {
+	t.Run("emoji from image", func(t *testing.T) {
+		input := "<@!746704561451827202> emoji delete hoge123_456"
+		expected := EmojiDelete{
+			Alias: "hoge123_456",
+		}
+		actual, err := ParseCommand(input)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+}
