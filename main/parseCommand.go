@@ -59,18 +59,18 @@ func ParseCommand(input string) (Command, error) {
 			}
 		}
 
-		var isTransparent bool
+		var transparency string
 		if len(arguments) >= 6 {
-			isTransparent, err = validateIsTransparent(arguments[5])
+			transparency, err = validateTransparency(arguments[5])
 			if err != nil {
 				return nil, err
 			}
 		}
 		return EmojiFromText{
-			Text:          text,
-			Alias:         alias,
-			Color:         color,
-			IsTransparent: isTransparent,
+			Text:         text,
+			Alias:        alias,
+			Color:        color,
+			Transparancy: transparency,
 		}, nil
 	}
 	return nil, errors.New("そのようなコマンドはありません><")
@@ -116,12 +116,13 @@ func validateColor(color string) (string, error) {
 	return "", errors.New("カラーコードは3桁または6桁で入力してください")
 }
 
-func validateIsTransparent(input string) (bool, error) {
+// Validate input and return transparency value corresponding to user input.
+func validateTransparency(input string) (string, error) {
 	input = strings.ToLower(input)
 	if input == "true" {
-		return true, nil
+		return "00", nil
 	} else if input == "false" {
-		return false, nil
+		return "ff", nil
 	}
-	return false, errors.New("TRANSPにはtrueまたはfalseを指定してください")
+	return "", errors.New("TRANSPにはtrueまたはfalseを指定してください")
 }

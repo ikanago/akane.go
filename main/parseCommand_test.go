@@ -45,10 +45,10 @@ func TestParseEmojiFromText(t *testing.T) {
 	t.Run("emoji command", func(t *testing.T) {
 		input := "<@!746704561451827202> emoji hoge123_456 あいうabc ##12Fa4C true"
 		expected := EmojiFromText{
-			Alias:         "hoge123_456",
-			Text:          "あいうabc",
-			Color:         "12fa4c",
-			IsTransparent: true,
+			Alias:        "hoge123_456",
+			Text:         "あいうabc",
+			Color:        "12fa4c",
+			Transparancy: "00",
 		}
 		actual, err := ParseCommand(input)
 		assert := assert.New(t)
@@ -145,8 +145,8 @@ func TestValidateColor(t *testing.T) {
 func TestValidateIsTransparent(t *testing.T) {
 	t.Run("Valid transparency flag", func(t *testing.T) {
 		flag := "tRuE"
-		expected := true
-		actual, err := validateIsTransparent(flag)
+		expected := "00"
+		actual, err := validateTransparency(flag)
 		assert := assert.New(t)
 		assert.Equal(expected, actual)
 		assert.Nil(err)
@@ -154,8 +154,8 @@ func TestValidateIsTransparent(t *testing.T) {
 
 	t.Run("Valid transparency flag", func(t *testing.T) {
 		flag := "FalSE"
-		expected := false
-		actual, err := validateIsTransparent(flag)
+		expected := "ff"
+		actual, err := validateTransparency(flag)
 		assert := assert.New(t)
 		assert.Equal(expected, actual)
 		assert.Nil(err)
@@ -163,8 +163,8 @@ func TestValidateIsTransparent(t *testing.T) {
 
 	t.Run("Invalid transparency flag", func(t *testing.T) {
 		flag := "truee"
-		expected := false
-		actual, err := validateIsTransparent(flag)
+		expected := ""
+		actual, err := validateTransparency(flag)
 		assert := assert.New(t)
 		assert.Equal(expected, actual)
 		assert.NotNil(err)

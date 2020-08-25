@@ -16,10 +16,10 @@ type Help struct{}
 type Ping struct{}
 
 type EmojiFromText struct {
-	Text          string
-	Alias         string
-	Color         string
-	IsTransparent bool
+	Text         string
+	Alias        string
+	Color        string
+	Transparancy string
 }
 
 func (Help) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
