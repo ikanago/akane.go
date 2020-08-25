@@ -71,15 +71,17 @@ func (emojiFromText EmojiFromText) handle(session *discordgo.Session, message *d
 
 func (emojiFromImage EmojiFromImage) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
 	if len(message.Attachments) != 1 {
-		reply := "指定できる画像は1つです"
-		log.Println(reply)
-		return errors.New(reply)
+		return errors.New("指定できる画像は1つです")
+	}
+	// Size of image to convert into emoji must be smaller than 256kB.
+	maximumSize := 262144
+	if message.Attachments[0].Size > maximumSize {
+		return errors.New("画像のサイズは256kB以下にしてください")
 	}
 
 	encodedImage, err := EmojifyImage(message.Attachments[0].URL)
 	if err != nil {
-		log.Println(err)
-		return err
+		return
 	}
 
 	emoji, err := session.GuildEmojiCreate(message.GuildID, emojiFromImage.Alias, encodedImage, nil)
