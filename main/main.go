@@ -13,6 +13,36 @@ import (
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 )
 
+func main() {
+	projectID := os.Getenv("PROJECT_ID")
+	secretID := os.Getenv("SECRET_ID")
+	credential, err := accessSecretVersion(projectID, secretID)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	client, err := discordgo.New("Bot " + credential.DiscordToken)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	client.AddHandler(OnMessageCreate)
+
+	err = client.Open()
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	log.Println("Bot is running")
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
+	<-sc
+	client.Close()
+}
+
+// Credential is a struct to hold a token fetched from Google Secret Manager.
 type Credential struct {
 	DiscordToken string `json:"DISCORD_TOKEN"`
 }
@@ -41,31 +71,22 @@ func accessSecretVersion(projectID string, secretID string) (*Credential, error)
 	return &credential, nil
 }
 
-func main() {
-	projectID := os.Getenv("PROJECT_ID")
-	secretID := os.Getenv("SECRET_ID")
-	credential, err := accessSecretVersion(projectID, secretID)
-	if err != nil {
-		log.Fatal(err)
+// OnMessageCreate is called when there is a new message in a guild this bot is belogns to.
+// If this bot is mentioned, parse command and do corresponding actions.
+func OnMessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
+	if message.Author.ID == session.State.User.ID || len(message.Mentions) == 0 || message.Mentions[0].Username != session.State.User.Username {
 		return
 	}
 
-	client, err := discordgo.New("Bot " + credential.DiscordToken)
+	command, err := ParseCommand(message.Content)
 	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	client.AddHandler(MessageCreate)
-
-	err = client.Open()
-	if err != nil {
-		log.Fatal(err)
+		session.ChannelMessageSend(message.ChannelID, err.Error())
+		log.Println(err)
 		return
 	}
 
-	log.Println("Bot is running")
-	sc := make(chan os.Signal, 1)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
-	<-sc
-	client.Close()
+	if err = command.handle(session, message.Message); err != nil {
+		session.ChannelMessageSend(message.ChannelID, err.Error())
+		log.Println(err)
+	}
 }
