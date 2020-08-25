@@ -50,7 +50,11 @@ func ParseCommand(input string) (Command, error) {
 			return nil, err
 		}
 
-		text := arguments[3]
+		text, err := processText(arguments[3])
+		if err != nil {
+			return nil, err
+		}
+
 		var color string
 		if len(arguments) >= 5 {
 			color, err = validateColor(arguments[4])
@@ -66,6 +70,7 @@ func ParseCommand(input string) (Command, error) {
 				return nil, err
 			}
 		}
+
 		return EmojiFromText{
 			Text:         text,
 			Alias:        alias,
@@ -85,6 +90,23 @@ func validateAlias(alias string) (string, error) {
 		return alias, nil
 	}
 	return "", errors.New("エイリアスには英数字とアンダーバーのみ使えます")
+}
+
+// If there are more than or equal 4 UTF-8 characters, insert newline.
+func processText(text string) (string, error) {
+	utf8Len := len([]rune(text))
+	if utf8Len > 10 {
+		return "", errors.New("テキストが長すぎます")
+	}
+	if utf8Len < 4 {
+		return text, nil
+	}
+
+	// 0-indexed position to which '\n' is inserted into after
+	// Ceiling `utf8Len / 2`.
+	indice := (utf8Len + 1) / 2
+	inserted := string([]rune(text)[:indice]) + "\n" + string([]rune(text)[indice:])
+	return inserted, nil
 }
 
 const colorCodePattern = `^[a-f0-9]+$`

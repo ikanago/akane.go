@@ -46,7 +46,7 @@ func TestParseEmojiFromText(t *testing.T) {
 		input := "<@!746704561451827202> emoji hoge123_456 あいうabc ##12Fa4C true"
 		expected := EmojiFromText{
 			Alias:        "hoge123_456",
-			Text:         "あいうabc",
+			Text:         "あいう\nabc",
 			Color:        "12fa4c",
 			Transparancy: "00",
 		}
@@ -74,6 +74,26 @@ func TestValidateAlias(t *testing.T) {
 		assert := assert.New(t)
 		assert.Equal(expected, actual)
 		assert.NotNil(err)
+	})
+}
+
+func TestProcessText(t *testing.T) {
+	t.Run("No folding", func(t *testing.T) {
+		text := "破天荒"
+		expected := "破天荒"
+		actual, err := processText(text)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+
+	t.Run("Folding", func(t *testing.T) {
+		text := "意気揚々"
+		expected := "意気\n揚々"
+		actual, err := processText(text)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
 	})
 }
 
