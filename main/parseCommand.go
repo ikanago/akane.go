@@ -55,7 +55,7 @@ func ParseCommand(input string) (Command, error) {
 			return nil, err
 		}
 
-		var color string
+		color := "000000"
 		if len(arguments) >= 5 {
 			color, err = validateColor(arguments[4])
 			if err != nil {
@@ -63,7 +63,7 @@ func ParseCommand(input string) (Command, error) {
 			}
 		}
 
-		var transparency string
+		transparency := "ff"
 		if len(arguments) >= 6 {
 			transparency, err = validateTransparency(arguments[5])
 			if err != nil {

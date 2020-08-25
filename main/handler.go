@@ -42,6 +42,8 @@ func (Ping) handle(session *discordgo.Session, message *discordgo.Message) (err 
 }
 
 func (emojiFromText EmojiFromText) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
+	encodedImage, err := emojiFromText.EmojifyText()
+	log.Println(encodedImage)
 	reply := fmt.Sprint(emojiFromText)
 	result, err := session.ChannelMessageSend(message.ChannelID, reply)
 	log.Println(result)
