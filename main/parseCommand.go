@@ -10,7 +10,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
+// OnMessageCreate is called when there is a new message in a guild this bot is belogns to.
+// If this bot is mentioned, parse command and do corresponding actions.
+func OnMessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
 	if message.Author.ID == session.State.User.ID || len(message.Mentions) == 0 || message.Mentions[0].Username != session.State.User.Username {
 		return
 	}
@@ -28,14 +30,14 @@ func MessageCreate(session *discordgo.Session, message *discordgo.MessageCreate)
 	}
 }
 
-// Parse message from Discord
+// ParseCommand parses messages from Discord and returns results as sturct.
 func ParseCommand(input string) (Command, error) {
 	arguments := strings.Fields(input)
 	if len(arguments) < 2 {
-		return nil, errors.New("コマンドを指定してください!")
+		return nil, errors.New("コマンドを指定してください")
 	}
 
-	command := arguments[1]
+	command := strings.ToLower(arguments[1])
 	if command == "help" {
 		return Help{}, nil
 	} else if command == "ping" {

@@ -4,7 +4,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 )
 
-var HelpMessageEmbeds = []*discordgo.MessageEmbedField{
+var helpMessageEmbeds = []*discordgo.MessageEmbedField{
 	{
 		Name: "カスタム絵文字作成",
 		Value: "アオイチャンがカスタム絵文字を作ってくれます．\n" +

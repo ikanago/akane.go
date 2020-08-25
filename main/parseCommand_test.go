@@ -15,7 +15,7 @@ func TestParseCommand(t *testing.T) {
 	})
 
 	t.Run("help command", func(t *testing.T) {
-		input := "<@!746704561451827202> help"
+		input := "<@!746704561451827202> hElp"
 		expected := Help{}
 		actual, err := ParseCommand(input)
 		assert := assert.New(t)
@@ -95,6 +95,15 @@ func TestProcessText(t *testing.T) {
 		assert.Equal(expected, actual)
 		assert.Nil(err)
 	})
+
+	t.Run("Too long", func(t *testing.T) {
+		text := "寿限無寿限無五劫の擦り切れ"
+		expected := ""
+		actual, err := processText(text)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.NotNil(err)
+	})
 }
 
 func TestValidateColor(t *testing.T) {
@@ -108,7 +117,7 @@ func TestValidateColor(t *testing.T) {
 	})
 
 	t.Run("Valid color code without #", func(t *testing.T) {
-		color := "12FaBc"
+		color := "##12FaBc"
 		expected := "12fabc"
 		actual, err := validateColor(color)
 		assert := assert.New(t)
@@ -117,7 +126,7 @@ func TestValidateColor(t *testing.T) {
 	})
 
 	t.Run("Valid color code(3 hex)", func(t *testing.T) {
-		color := "#1aB"
+		color := "1aB"
 		expected := "11aabb"
 		actual, err := validateColor(color)
 		assert := assert.New(t)

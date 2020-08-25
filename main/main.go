@@ -13,6 +13,7 @@ import (
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 )
 
+// Credential is a struct to hold a token fetched from Google Secret Manager.
 type Credential struct {
 	DiscordToken string `json:"DISCORD_TOKEN"`
 }
@@ -55,7 +56,7 @@ func main() {
 		log.Fatal(err)
 		return
 	}
-	client.AddHandler(MessageCreate)
+	client.AddHandler(OnMessageCreate)
 
 	err = client.Open()
 	if err != nil {
