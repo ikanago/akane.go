@@ -7,7 +7,7 @@ import (
 var helpMessageEmbeds = []*discordgo.MessageEmbedField{
 	{
 		Name: "カスタム絵文字作成",
-		Value: "アオイチャンがカスタム絵文字を作ってくれます．\n" +
+		Value: "アカネチャンがカスタム絵文字を作ってくれます．\n" +
 			"`TEXT`:   絵文字にしたい文字列\n" +
 			"`ALIAS`:  絵文字のエイリアス\n" +
 			"`URL`:    画像のURL\n" +
