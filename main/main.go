@@ -14,15 +14,8 @@ import (
 )
 
 func main() {
-	projectID := os.Getenv("PROJECT_ID")
-	secretID := os.Getenv("SECRET_ID")
-	credential, err := accessSecretVersion(projectID, secretID)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
-	client, err := discordgo.New("Bot " + credential.DiscordToken)
+	token := os.Getenv("DISCORD_TOKEN")
+	client, err := discordgo.New("Bot " + token)
 	if err != nil {
 		log.Fatal(err)
 		return
