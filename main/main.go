@@ -1,16 +1,12 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"log"
 	"os"
 	"os/signal"
 	"syscall"
 
-	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"github.com/bwmarrin/discordgo"
-	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 )
 
 func main() {
@@ -33,35 +29,6 @@ func main() {
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
 	<-sc
 	client.Close()
-}
-
-// Credential is a struct to hold a token fetched from Google Secret Manager.
-type Credential struct {
-	DiscordToken string `json:"DISCORD_TOKEN"`
-}
-
-func accessSecretVersion(projectID string, secretID string) (*Credential, error) {
-	ctx := context.Background()
-	client, err := secretmanager.NewClient(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	secretURI := "projects/" + projectID + "/secrets/" + secretID + "/versions/latest"
-	req := &secretmanagerpb.AccessSecretVersionRequest{
-		Name: secretURI,
-	}
-
-	result, err := client.AccessSecretVersion(ctx, req)
-	if err != nil {
-		return nil, err
-	}
-
-	var credential Credential
-	if err := json.Unmarshal(result.Payload.Data, &credential); err != nil {
-		return nil, err
-	}
-	return &credential, nil
 }
 
 // OnMessageCreate is called when there is a new message in a guild this bot is belogns to.
