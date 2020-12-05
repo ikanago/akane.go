@@ -32,6 +32,15 @@ func TestParseBasicCommands(t *testing.T) {
 		assert.Nil(err)
 	})
 
+	t.Run("Goodjob command", func(t *testing.T) {
+		input := "<@!746704561451827202> goodjob"
+		expected := GoodJob{}
+		actual, err := ParseCommand(input)
+		assert := assert.New(t)
+		assert.Equal(expected, actual)
+		assert.Nil(err)
+	})
+
 	t.Run("Unknown command", func(t *testing.T) {
 		input := "<@!746704561451827202> hoge"
 		actual, err := ParseCommand(input)

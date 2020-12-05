@@ -20,6 +20,8 @@ func ParseCommand(input string) (Command, error) {
 		return Help{}, nil
 	} else if command == "ping" {
 		return Ping{}, nil
+	} else if command == "goodjob" {
+		return GoodJob{}, nil
 	} else if command == "emoji" {
 		if len(arguments) < 4 {
 			return nil, errors.New("エイリアスまたは絵文字にするテキストを指定してください")

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 
 	"github.com/bwmarrin/discordgo"
 )
@@ -18,6 +19,9 @@ type Help struct{}
 
 // Ping represents parsed results of `ping` command.
 type Ping struct{}
+
+// Respond to goodjob
+type GoodJob struct {}
 
 // EmojiFromText represents parsed results of `emoji ALIAS TEXT ...` command.
 type EmojiFromText struct {
@@ -53,6 +57,14 @@ func (Help) handle(session *discordgo.Session, message *discordgo.Message) (err 
 
 func (Ping) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
 	reply := "Pong!"
+	_, err = session.ChannelMessageSend(message.ChannelID, reply)
+	return
+}
+
+func (GoodJob) handle(session *discordgo.Session, message *discordgo.Message) (err error) {
+	candidates := []string{"ありがとうございます!", "Yay!", "😋"}
+	picked := rand.Intn(len(candidates))
+	reply := candidates[picked]
 	_, err = session.ChannelMessageSend(message.ChannelID, reply)
 	return
 }
