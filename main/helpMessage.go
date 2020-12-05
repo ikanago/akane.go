@@ -29,4 +29,9 @@ var helpMessageEmbeds = []*discordgo.MessageEmbedField{
 			"`@Akane help`\n" +
 			"と打ってみましょう! きっとすぐに使えるようになりますよ!",
 	},
+	{
+		Name: "Good Job",
+		Value: "`@Akane goodjob`\n" +
+			"と打つと返事をします",
+	},
 }
