@@ -8,5 +8,5 @@ Create Discord custom Emoji through command!
 
 # How to Run
 ```
-$ DISCORD_TOKEN=XXXXXXX go run main
+$ DISCORD_TOKEN=XXXXXXX go run ./main
 ```

@@ -79,7 +79,7 @@ func (emojiFromText EmojiFromText) handle(session *discordgo.Session, message *d
 	log.Printf("Emoji: %v", emoji)
 	if err != nil {
 		log.Println(err)
-		return errors.New("カスタム絵文字の追加に失敗しました")
+		return errors.New("絵文字の登録に失敗しました: 絵文字の登録数の上限に達しました")
 	}
 
 	reply := fmt.Sprintf("カスタム絵文字 :%s: を追加しました", emojiFromText.Alias)
