@@ -26,10 +26,6 @@ jobs:
           ~/.cache/go-build
         key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
-    - name: Download deps
-      run: |
-        go mod download
-
     - name: Test
       run: |
         mkdir -p bin
