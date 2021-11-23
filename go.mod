@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/asaskevich/govalidator v0.0.0-20200819183940-29e1ff8eb0bb
 	github.com/bwmarrin/discordgo v0.23.2
-	github.com/stretchr/testify v1.4.0
+	github.com/stretchr/testify v1.7.0
 )
 
 require (
@@ -16,5 +16,5 @@ require (
 	golang.org/x/crypto v0.0.0-20200622213623-75b288015ac9 // indirect
 	golang.org/x/sys v0.0.0-20200803210538-64077c9b5642 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
-	gopkg.in/yaml.v2 v2.2.2 // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200313102051-9f266ea9e77c // indirect
 )
