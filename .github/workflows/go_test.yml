@@ -15,19 +15,18 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v2
       with:
-        go-version: ^1.15
-      id: go
+        go-version: 1.17
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
-    - name: Get dependencies
-      run: go mod download
-
-    - name: Build
-      run: |
-        mkdir -p bin
-        go build -v -o ./bin ./main
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/go/pkg/mod
+          ~/.cache/go-build
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
 
     - name: Test
-      run: go test -v ./main
+      run: |
+        mkdir -p bin
+        go test -v ./main
