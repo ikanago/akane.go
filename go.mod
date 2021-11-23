@@ -4,7 +4,7 @@ module github.com/ikanago/akane.go
 go 1.17
 
 require (
-	github.com/asaskevich/govalidator v0.0.0-20200819183940-29e1ff8eb0bb
+	github.com/asaskevich/govalidator/v11 v11.0.1
 	github.com/bwmarrin/discordgo v0.23.2
 	github.com/stretchr/testify v1.7.0
 )
