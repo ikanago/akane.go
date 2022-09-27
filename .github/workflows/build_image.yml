@@ -28,7 +28,7 @@ jobs:
         if: ${{ github.event_name == 'pull_request' }}
         id: image_suffix
         run:
-          echo ::set-output name=image_suffix::test"
+          echo ::set-output name=image_suffix::test
 
       - name: Docker metadata
         id: metadata
