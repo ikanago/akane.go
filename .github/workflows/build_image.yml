@@ -12,11 +12,14 @@ on:
       - Dockerfile
       - .github/workflows/build_image.yml
 
+env:
+  CONTAINER_REGISTRY: ghcr.io
+
 jobs:
   build:
     runs-on: ubuntu-22.04
-    env:
-      CONTAINER_REGISTRY: ghcr.io
+    outputs:
+      digest: ${{ steps.build-image.outputs.digest }}
 
     steps:
       - uses: actions/checkout@v3
@@ -55,21 +58,31 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  update-digest:
+    runs-on: ubuntu-22.04
+    if: ${{ github.event_name == 'push' }}
+    needs: build
+    steps:
+      - name: Check out k3s_gcp
+        uses: actions/checkout@v3
+        with:
+          repository: ikanago/k3s_gcp
+          ref: update-image-digest
+          fetch-depth: 0
+
+      - name: Update image digest
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+
+          IMAGE=${{ env.CONTAINER_REGISTRY }}/${{ github.repository }}@${{ needs.build.outputs.digest }}
+          yq -i '(.spec.containers[] | select(.name=="akane") | .image) = "$IMAGE"' akane/pod.yaml
+          git commit -am "Update image digest"
+
+      - uses: ad-m/github-push-action@master
+
       - name: Create PR updating the image
-        if: ${{ github.event_name == 'push' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${{ github.repository }}
-          git config --global user.name ikanago
-          git config --global user.email ikanago-dev@users.noreply.github.com
-          git clone https://github.com/ikanago/k3s_gcp --depth 1 k3s_gcp
-          cd k3s_gcp
-          git switch -c update-image-digest
-
-          IMAGE=${{ env.CONTAINER_REGISTRY }}/${{ github.repository }}@${{ steps.build-image.outputs.digest }}
-          yq -i '(.spec.containers[] | select(.name=="akane") | .image) = "$IMAGE"' akane/pod.yaml
-
-          git commit -am "Update image digest"
-          git push -u origin update-image-digest
           gh pr create --title "Update image digest"
