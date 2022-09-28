@@ -63,12 +63,13 @@ jobs:
     if: ${{ github.event_name == 'push' }}
     needs: build
     env:
+      MANIFEST_REPO: ikanago/k3s_gcp
       WORKING_BRANCH: update-image-digest
     steps:
       - name: Check out k3s_gcp
         uses: actions/checkout@v3
         with:
-          repository: ikanago/k3s_gcp
+          repository: ${{ env.MANIFEST_REPO }}
           fetch-depth: 0
 
       - name: Update image digest
@@ -83,7 +84,9 @@ jobs:
 
       - uses: ad-m/github-push-action@master
         with:
+          github_token: ${{ secret.K3S_GCP_PUSH_TOKEN }}
           branch: ${{ env.WORKING_BRANCH }}
+          repository: ${{ env.MANIFEST_REPO }}
 
       - name: Create PR updating the image
         env:
