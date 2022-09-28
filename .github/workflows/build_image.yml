@@ -18,8 +18,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-22.04
-    outputs:
-      digest: ${{ steps.build-image.outputs.digest }}
 
     steps:
       - uses: actions/checkout@v3
@@ -57,39 +55,3 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  update-digest:
-    runs-on: ubuntu-22.04
-    if: ${{ github.event_name == 'push' }}
-    needs: build
-    env:
-      MANIFEST_REPO: ikanago/k3s_gcp
-      WORKING_BRANCH: update-image-digest
-    steps:
-      - name: Check out k3s_gcp
-        uses: actions/checkout@v3
-        with:
-          repository: ${{ env.MANIFEST_REPO }}
-          fetch-depth: 0
-
-      - name: Update image digest
-        run: |
-          git config --local user.name "ikanago"
-          git config --local user.email "ikanago-dev@protonmail.com"
-          git switch -c ${{ env.WORKING_BRANCH }}
-
-          IMAGE=${{ env.CONTAINER_REGISTRY }}/${{ github.repository }}@${{ needs.build.outputs.digest }}
-          yq -i '(.spec.containers[] | select(.name=="akane") | .image) = "$IMAGE"' akane/pod.yaml
-          git commit -am "Update image digest"
-
-      - uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.K3S_GCP_PUSH_TOKEN }}
-          branch: ${{ env.WORKING_BRANCH }}
-          repository: ${{ env.MANIFEST_REPO }}
-
-      - name: Create PR updating the image
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr create --title "Update image digest" --head ${{ env.WORKING_BRANCH }}
