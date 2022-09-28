@@ -84,7 +84,7 @@ jobs:
 
       - uses: ad-m/github-push-action@master
         with:
-          github_token: ${{ secret.K3S_GCP_PUSH_TOKEN }}
+          github_token: ${{ secrets.K3S_GCP_PUSH_TOKEN }}
           branch: ${{ env.WORKING_BRANCH }}
           repository: ${{ env.MANIFEST_REPO }}
 
