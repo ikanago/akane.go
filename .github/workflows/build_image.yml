@@ -62,7 +62,7 @@ jobs:
         run: |
           git config --global user.name ikanago
           git config --global user.email ikanago-dev@protonmail.com
-          git clone https://github.com/ikanago/k3s_gcp . -- --depth 1
+          git clone https://github.com/ikanago/k3s_gcp --depth 1 k3s_gcp
           cd k3s_gcp
           git switch -c update-image-digest
 
