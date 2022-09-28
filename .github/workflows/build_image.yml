@@ -44,6 +44,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and Push Image
+        id: build-image
         uses: docker/build-push-action@v3
         with:
           context: .
@@ -53,3 +54,21 @@ jobs:
           labels: ${{ steps.metadata.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Create PR updating the image
+        if: ${{ github.event_name == 'push' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name ikanago
+          git config --global user.email ikanago-dev@protonmail.com
+          git clone https://github.com/ikanago/k3s_gcp . -- --depth 1
+          cd k3s_gcp
+          git switch -c update-image-digest
+
+          IMAGE=${{ env.CONTAINER_REGISTRY }}/${{ github.repository }}@${{ steps.build-image.outputs.digest }}
+          yq -i '(.spec.containers[] | select(.name=="akane") | .image) = "$IMAGE"' akane/pod.yaml
+
+          git commit -am "Update image digest"
+          git push -u origin update-image-digest
+          gh pr create --title "Update image digest"
