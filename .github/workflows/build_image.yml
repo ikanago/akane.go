@@ -60,8 +60,9 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${{ github.repository }}
           git config --global user.name ikanago
-          git config --global user.email ikanago-dev@protonmail.com
+          git config --global user.email ikanago-dev@users.noreply.github.com
           git clone https://github.com/ikanago/k3s_gcp --depth 1 k3s_gcp
           cd k3s_gcp
           git switch -c update-image-digest
@@ -70,6 +71,5 @@ jobs:
           yq -i '(.spec.containers[] | select(.name=="akane") | .image) = "$IMAGE"' akane/pod.yaml
 
           git commit -am "Update image digest"
-          gh auth setup-git
           git push -u origin update-image-digest
           gh pr create --title "Update image digest"
