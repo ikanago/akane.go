@@ -70,5 +70,6 @@ jobs:
           yq -i '(.spec.containers[] | select(.name=="akane") | .image) = "$IMAGE"' akane/pod.yaml
 
           git commit -am "Update image digest"
+          gh auth setup-git
           git push -u origin update-image-digest
           gh pr create --title "Update image digest"
