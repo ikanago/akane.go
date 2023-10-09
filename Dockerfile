@@ -10,7 +10,7 @@ COPY . .
 
 RUN mkdir bin && CGO_ENABLED=0 go build -o ./bin ./main
 
-FROM gcr.io/distroless/base@sha256:c06bf48fa67dab06db6027109d3d802aa5b7d213c86a9eabc4d83f806d18ce1c
+FROM gcr.io/distroless/base@sha256:b31a6e02605827e77b7ebb82a0ac9669ec51091edd62c2c076175e05556f4ab9
 
 WORKDIR /app
 
