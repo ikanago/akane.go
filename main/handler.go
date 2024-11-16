@@ -21,7 +21,7 @@ type Help struct{}
 type Ping struct{}
 
 // Respond to goodjob
-type GoodJob struct {}
+type GoodJob struct{}
 
 // EmojiFromText represents parsed results of `emoji ALIAS TEXT ...` command.
 type EmojiFromText struct {
@@ -75,7 +75,10 @@ func (emojiFromText EmojiFromText) handle(session *discordgo.Session, message *d
 		return
 	}
 
-	emoji, err := session.GuildEmojiCreate(message.GuildID, emojiFromText.Alias, encodedImage, nil)
+	emoji, err := session.GuildEmojiCreate(message.GuildID, &discordgo.EmojiParams{
+		Name:  emojiFromText.Alias,
+		Image: encodedImage,
+	})
 	log.Printf("Emoji: %v", emoji)
 	if err != nil {
 		log.Println(err)
@@ -97,7 +100,10 @@ func (emojiFromImage EmojiFromImage) handle(session *discordgo.Session, message 
 		return
 	}
 
-	emoji, err := session.GuildEmojiCreate(message.GuildID, emojiFromImage.Alias, encodedImage, nil)
+	emoji, err := session.GuildEmojiCreate(message.GuildID, &discordgo.EmojiParams{
+		Name:  emojiFromImage.Alias,
+		Image: encodedImage,
+	})
 	log.Printf("Emoji: %v", emoji)
 	if err != nil {
 		log.Println(err)
@@ -115,7 +121,10 @@ func (emojiFromURL EmojiFromURL) handle(session *discordgo.Session, message *dis
 		return
 	}
 
-	emoji, err := session.GuildEmojiCreate(message.GuildID, emojiFromURL.Alias, encodedImage, nil)
+	emoji, err := session.GuildEmojiCreate(message.GuildID, &discordgo.EmojiParams{
+		Name:  emojiFromURL.Alias,
+		Image: encodedImage,
+	})
 	log.Printf("Emoji: %v", emoji)
 	if err != nil {
 		log.Println(err)
